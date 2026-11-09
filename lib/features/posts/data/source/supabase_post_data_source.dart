@@ -7,7 +7,7 @@ class SupabasePostDataSource {
 
   static const _columns =
       'id, content, created_at, '
-      'author:profiles!profile_id(username, full_name), '
+      'author:profiles!profile_id(username, full_name, avatar_path), '
       'likes(count), '
       'my_like:likes(profile_id)';
 
@@ -81,12 +81,16 @@ class SupabasePostDataSource {
 
   Post _toPost(Map<String, dynamic> row) {
     final author = row['author'] as Map<String, dynamic>;
+    final avatarPath = author['avatar_path'] as String?;
     return Post(
       id: row['id'] as String,
       content: row['content'] as String,
       createdAt: DateTime.parse(row['created_at'] as String),
       authorUsername: author['username'] as String,
       authorName: author['full_name'] as String,
+      authorAvatarUrl: avatarPath == null
+          ? null
+          : _client.storage.from('avatars').getPublicUrl(avatarPath),
       likeCount: (row['likes'] as List).first['count'] as int,
       likedByMe: (row['my_like'] as List).isNotEmpty,
     );
