@@ -8,8 +8,16 @@ import 'package:moviles_auth/theme/app_theme.dart';
 class PostCard extends StatelessWidget {
   final Post post;
   final Function() onLike;
+  final bool canDelete;
+  final Function()? onDelete;
 
-  const PostCard({super.key, required this.post, required this.onLike});
+  const PostCard({
+    super.key,
+    required this.post,
+    required this.onLike,
+    this.canDelete = false,
+    this.onDelete,
+  });
 
   String _date(DateTime date) {
     final local = date.toLocal();
@@ -60,6 +68,13 @@ class PostCard extends StatelessWidget {
                   color: AppColors.textSecondary,
                 ),
               ),
+              if (canDelete && onDelete != null)
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Eliminar post',
+                  visualDensity: VisualDensity.compact,
+                ),
               const SizedBox(width: 8),
             ],
           ),

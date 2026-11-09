@@ -51,4 +51,14 @@ class PostRepositoryImpl implements PostRepository {
   Future<String> imageUrl(String path) {
     return _images.signedUrl(path);
   }
+
+  @override
+  Future<void> delete(String postId) {
+    return _dataSource.delete(postId);
+  }
+
+  @override
+  Future<void> deleteImage(String path) {
+    return _images.remove(path);
+  }
 }

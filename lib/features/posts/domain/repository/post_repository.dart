@@ -12,4 +12,6 @@ abstract class PostRepository {
   Future<PickedPhoto?> pickImage({PhotoSource source = PhotoSource.gallery});
   Future<String> uploadImage(PickedPhoto photo);
   Future<String> imageUrl(String path);
+  Future<void> delete(String postId);
+  Future<void> deleteImage(String path);
 }

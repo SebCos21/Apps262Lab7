@@ -38,4 +38,12 @@ class SupabasePostImageDataSource {
       throw Exception(e.message);
     }
   }
+
+  Future<void> remove(String path) async {
+    try {
+      await _client.storage.from(bucket).remove([path]);
+    } on StorageException catch (e) {
+      throw Exception(e.message);
+    }
+  }
 }

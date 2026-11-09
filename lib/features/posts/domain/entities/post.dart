@@ -3,6 +3,7 @@ class Post {
   final String id;
   final String content;
   final DateTime createdAt;
+  final String authorId;
   final String authorUsername;
   final String authorName;
   final String? authorAvatarUrl;
@@ -15,6 +16,7 @@ class Post {
     required this.id,
     required this.content,
     required this.createdAt,
+    this.authorId = '',
     required this.authorUsername,
     required this.authorName,
     this.authorAvatarUrl,
@@ -29,6 +31,7 @@ class Post {
       id: id,
       content: content,
       createdAt: createdAt,
+      authorId: authorId,
       authorUsername: authorUsername,
       authorName: authorName,
       authorAvatarUrl: authorAvatarUrl,

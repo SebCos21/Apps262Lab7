@@ -8,6 +8,7 @@ import 'package:moviles_auth/features/home/ui/bloc/feed_state.dart';
 import 'package:moviles_auth/features/posts/domain/entities/post.dart';
 import 'package:moviles_auth/features/posts/domain/usecases/get_feed_usecase.dart';
 import 'package:moviles_auth/features/posts/domain/usecases/get_my_posts_usecase.dart';
+import 'package:moviles_auth/features/posts/domain/usecases/delete_post_usecase.dart';
 import 'package:moviles_auth/features/posts/domain/usecases/toggle_like_usecase.dart';
 
 /// Loads the profile and the wall, toggles likes, changes the photo and signs out.
@@ -18,6 +19,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   final GetFeedUseCase _getFeed = GetFeedUseCase();
   final GetMyPostsUseCase _getMyPosts = GetMyPostsUseCase();
   final ToggleLikeUseCase _toggleLike = ToggleLikeUseCase();
+  final DeletePostUseCase _deletePost = DeletePostUseCase();
   final ChangeAvatarUseCase _changeAvatar = ChangeAvatarUseCase();
   final RemoveAvatarUseCase _removeAvatar = RemoveAvatarUseCase();
 
@@ -27,6 +29,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     on<FeedStarted>(_onStarted);
     on<FeedMoreRequested>(_onMoreRequested);
     on<FeedLikeToggled>(_onLikeToggled);
+    on<FeedDeleteRequested>(_onDeleteRequested);
     on<AvatarChangeRequested>(_onAvatarChangeRequested);
     on<AvatarRemoveRequested>(_onAvatarRemoveRequested);
   }
@@ -93,6 +96,29 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
       emit(
         state.copyWith(posts: swap(state.posts), myPosts: swap(state.myPosts)),
+      );
+    } on Exception catch (e) {
+      emit(
+        state.copyWith(status: FeedStatus.failure, errorMessage: _message(e)),
+      );
+    }
+  }
+
+  Future<void> _onDeleteRequested(
+    FeedDeleteRequested event,
+    Emitter<FeedState> emit,
+  ) async {
+    try {
+      await _deletePost(event.post);
+      List<Post> without(List<Post> list) {
+        return list.where((post) => post.id != event.post.id).toList();
+      }
+
+      emit(
+        state.copyWith(
+          posts: without(state.posts),
+          myPosts: without(state.myPosts),
+        ),
       );
     } on Exception catch (e) {
       emit(

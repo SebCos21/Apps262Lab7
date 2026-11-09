@@ -60,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onRemovePhoto: () => bloc.add(AvatarRemoveRequested()),
         onLike: (post) => bloc.add(FeedLikeToggled(post)),
         onSignOut: () => bloc.add(SignOutRequested()),
+        onDelete: (post) => bloc.add(FeedDeleteRequested(post)),
       );
     }
     return FeedPage(
@@ -68,6 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading: state.status == FeedStatus.loading,
       onLoadMore: () => bloc.add(FeedMoreRequested()),
       onLike: (post) => bloc.add(FeedLikeToggled(post)),
+      currentProfileId: state.profile?.id,
+      onDelete: (post) => bloc.add(FeedDeleteRequested(post)),
     );
   }
 

@@ -16,6 +16,7 @@ class ProfilePage extends StatelessWidget {
   final Function()? onRemovePhoto;
   final Function(Post) onLike;
   final Function() onSignOut;
+  final Function(Post)? onDelete;
 
   const ProfilePage({
     super.key,
@@ -26,6 +27,7 @@ class ProfilePage extends StatelessWidget {
     this.onRemovePhoto,
     required this.onLike,
     required this.onSignOut,
+    this.onDelete,
   });
 
   Widget _photo() {
@@ -104,7 +106,12 @@ class ProfilePage extends StatelessWidget {
               style: TextStyle(color: AppColors.textSecondary),
             ),
           for (final post in posts)
-            PostCard(post: post, onLike: () => onLike(post)),
+            PostCard(
+              post: post,
+              onLike: () => onLike(post),
+              canDelete: onDelete != null,
+              onDelete: onDelete == null ? null : () => onDelete!(post),
+            ),
           const SizedBox(height: 24),
           PrimaryButton(label: 'Cerrar sesión', onPressed: () => onSignOut()),
         ],

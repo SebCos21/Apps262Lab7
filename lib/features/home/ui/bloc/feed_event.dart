@@ -67,3 +67,15 @@ class AvatarRemoveRequested extends FeedEvent {
     return 'AvatarRemoveRequested()';
   }
 }
+
+/// The user wants to delete one of their posts.
+class FeedDeleteRequested extends FeedEvent {
+  final Post post;
+
+  FeedDeleteRequested(this.post);
+
+  @override
+  String toString() {
+    return 'FeedDeleteRequested($post)';
+  }
+}
