@@ -6,8 +6,11 @@ import 'package:uuid/uuid.dart';
 class SupabaseAvatarDataSource {
   static const bucket = 'avatars';
 
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
   final Uuid _uuid = const Uuid();
+
+  SupabaseAvatarDataSource({SupabaseClient? client})
+    : _client = client ?? Supabase.instance.client;
 
   String get _uid {
     return _client.auth.currentUser!.id;

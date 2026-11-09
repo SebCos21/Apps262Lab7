@@ -94,6 +94,19 @@ El set de tests cubre, además del Laboratorio 6:
 - Que el evento lleve la fuente elegida.
 - Que el botón de borrar aparezca solo en posts propios.
 - Que no aparezca si no hay perfil autenticado.
+- Que cancelar el diálogo de borrado no elimine el post.
+
+### Tests de integración
+
+El flujo real de fotos se prueba contra Supabase con una cuenta de prueba. El test sube un avatar, actualiza el perfil, verifica la URL pública, sube una imagen de post, firma en lote, crea y lee el post, y finalmente limpia todo.
+
+```powershell
+flutter test test/integration/photo_flow_test.dart `
+  --dart-define=TEST_EMAIL=tu-correo-de-prueba `
+  --dart-define=TEST_PASSWORD=tu-contrasena-de-prueba
+```
+
+Sin `TEST_EMAIL` y `TEST_PASSWORD`, el test se omite y `flutter test` sigue pasando.
 
 ## Prueba manual rápida
 

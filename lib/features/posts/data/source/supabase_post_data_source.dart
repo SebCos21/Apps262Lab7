@@ -3,7 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// The only file that talks to the posts and likes tables.
 class SupabasePostDataSource {
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
+
+  SupabasePostDataSource({SupabaseClient? client})
+    : _client = client ?? Supabase.instance.client;
 
   static const _columns =
       'id, content, image_path, created_at, '

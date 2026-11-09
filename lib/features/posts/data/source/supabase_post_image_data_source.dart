@@ -6,8 +6,11 @@ import 'package:uuid/uuid.dart';
 class SupabasePostImageDataSource {
   static const bucket = 'post-images';
 
-  final SupabaseClient _client = Supabase.instance.client;
+  final SupabaseClient _client;
   final Uuid _uuid = const Uuid();
+
+  SupabasePostImageDataSource({SupabaseClient? client})
+    : _client = client ?? Supabase.instance.client;
 
   String get _uid {
     return _client.auth.currentUser!.id;
