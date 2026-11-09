@@ -35,7 +35,7 @@ class SupabaseProfileDataSource {
     }
   }
 
-  Future<void> updateAvatarPath(String id, String path) async {
+  Future<void> updateAvatarPath(String id, String? path) async {
     try {
       await _client.from('profiles').update({'avatar_path': path}).eq('id', id);
     } on PostgrestException catch (e) {

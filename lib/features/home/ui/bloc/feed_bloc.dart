@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moviles_auth/features/auth/domain/usecases/get_my_profile_usecase.dart';
 import 'package:moviles_auth/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:moviles_auth/features/avatar/domain/usecases/change_avatar_usecase.dart';
+import 'package:moviles_auth/features/avatar/domain/usecases/remove_avatar_usecase.dart';
 import 'package:moviles_auth/features/home/ui/bloc/feed_event.dart';
 import 'package:moviles_auth/features/home/ui/bloc/feed_state.dart';
 import 'package:moviles_auth/features/posts/domain/entities/post.dart';
@@ -18,6 +19,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   final GetMyPostsUseCase _getMyPosts = GetMyPostsUseCase();
   final ToggleLikeUseCase _toggleLike = ToggleLikeUseCase();
   final ChangeAvatarUseCase _changeAvatar = ChangeAvatarUseCase();
+  final RemoveAvatarUseCase _removeAvatar = RemoveAvatarUseCase();
 
   FeedBloc() : super(const FeedState()) {
     on<ProfileRequested>(_onProfileRequested);
@@ -26,6 +28,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     on<FeedMoreRequested>(_onMoreRequested);
     on<FeedLikeToggled>(_onLikeToggled);
     on<AvatarChangeRequested>(_onAvatarChangeRequested);
+    on<AvatarRemoveRequested>(_onAvatarRemoveRequested);
   }
 
   String _message(Exception e) {
@@ -109,6 +112,25 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         emit(state.copyWith(avatarStatus: AvatarStatus.idle));
         return;
       }
+      emit(state.copyWith(profile: profile, avatarStatus: AvatarStatus.idle));
+      add(FeedStarted());
+    } on Exception catch (e) {
+      emit(
+        state.copyWith(
+          avatarStatus: AvatarStatus.failure,
+          errorMessage: _message(e),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onAvatarRemoveRequested(
+    AvatarRemoveRequested event,
+    Emitter<FeedState> emit,
+  ) async {
+    emit(state.copyWith(avatarStatus: AvatarStatus.uploading));
+    try {
+      final profile = await _removeAvatar();
       emit(state.copyWith(profile: profile, avatarStatus: AvatarStatus.idle));
       add(FeedStarted());
     } on Exception catch (e) {

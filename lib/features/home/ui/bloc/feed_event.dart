@@ -54,3 +54,11 @@ class AvatarChangeRequested extends FeedEvent {
     return 'AvatarChangeRequested()';
   }
 }
+
+/// The user wants to remove the current profile photo.
+class AvatarRemoveRequested extends FeedEvent {
+  @override
+  String toString() {
+    return 'AvatarRemoveRequested()';
+  }
+}

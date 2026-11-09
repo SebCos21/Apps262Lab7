@@ -13,6 +13,7 @@ class ProfilePage extends StatelessWidget {
   final List<Post> posts;
   final bool isUploading;
   final Function() onChangePhoto;
+  final Function()? onRemovePhoto;
   final Function(Post) onLike;
   final Function() onSignOut;
 
@@ -22,6 +23,7 @@ class ProfilePage extends StatelessWidget {
     required this.posts,
     required this.isUploading,
     required this.onChangePhoto,
+    this.onRemovePhoto,
     required this.onLike,
     required this.onSignOut,
   });
@@ -82,6 +84,11 @@ class ProfilePage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(color: AppColors.textSecondary),
           ),
+          if (profile.avatarUrl != null && onRemovePhoto != null)
+            TextButton(
+              onPressed: isUploading ? null : () => onRemovePhoto!(),
+              child: const Text('Quitar foto'),
+            ),
           const SizedBox(height: 32),
           const Text(
             'Tus últimos posts',

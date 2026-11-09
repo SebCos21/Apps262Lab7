@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         posts: state.myPosts,
         isUploading: state.avatarStatus == AvatarStatus.uploading,
         onChangePhoto: () => bloc.add(AvatarChangeRequested()),
+        onRemovePhoto: () => bloc.add(AvatarRemoveRequested()),
         onLike: (post) => bloc.add(FeedLikeToggled(post)),
         onSignOut: () => bloc.add(SignOutRequested()),
       );

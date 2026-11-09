@@ -17,7 +17,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<void> updateAvatarPath(String id, String path) {
+  Future<void> updateAvatarPath(String id, String? path) {
     return _dataSource.updateAvatarPath(id, path);
   }
 }
