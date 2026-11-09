@@ -8,12 +8,24 @@ class GetFeedUseCase {
 
   Future<List<Post>> call({required int page, required int size}) async {
     final posts = await _posts.fetchFeed(page: page, size: size);
-    return Future.wait(posts.map(_withImage));
+    return _withImages(posts);
   }
 
-  Future<Post> _withImage(Post post) async {
-    final path = post.imagePath;
-    if (path == null) return post;
-    return post.copyWith(imageUrl: await _posts.imageUrl(path));
+  Future<List<Post>> _withImages(List<Post> posts) async {
+    final paths = posts
+        .map((post) => post.imagePath)
+        .whereType<String>()
+        .toSet()
+        .toList();
+    if (paths.isEmpty) return posts;
+
+    final urls = await _posts.imageUrls(paths);
+    return [
+      for (final post in posts)
+        if (post.imagePath == null)
+          post
+        else
+          post.copyWith(imageUrl: urls[post.imagePath]),
+    ];
   }
 }
