@@ -99,6 +99,17 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+        BlocListener<FeedBloc, FeedState>(
+          listenWhen: (previous, current) =>
+              previous.status != current.status &&
+              current.status == FeedStatus.failure &&
+              current.errorMessage != null,
+          listener: (context, state) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage!)),
+            );
+          },
+        ),
       ],
       child: Scaffold(
         appBar: AppBar(title: Text(_index == 0 ? 'Muro' : 'Perfil')),

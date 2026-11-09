@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moviles_auth/components/avatar.dart';
 import 'package:moviles_auth/features/auth/domain/entities/profile.dart';
+import 'package:moviles_auth/features/avatar/domain/entities/photo_source.dart';
 import 'package:moviles_auth/features/avatar/domain/entities/picked_photo.dart';
 import 'package:moviles_auth/features/compose/ui/bloc/compose_bloc.dart';
 import 'package:moviles_auth/features/compose/ui/bloc/compose_event.dart';
@@ -136,10 +137,11 @@ class _EventRecorder extends BlocObserver {
   }
 }
 
-Post _post(String id, {int likes = 0, bool mine = false}) => Post(
+Post _post(String id, {int likes = 0, bool mine = false, String authorId = ''}) => Post(
   id: id,
   content: 'Contenido de $id',
   createdAt: DateTime(2026, 10, 18, 10, 5),
+  authorId: authorId,
   authorUsername: 'ana.dev',
   authorName: 'Ana Gómez',
   likeCount: likes,
@@ -272,5 +274,109 @@ void main() {
     await tester.pump();
     final event = recorder.events.single as ComposeSubmitted;
     expect(event.content, 'Hola muro');
+  });
+
+  testWidgets('HomeScreen asks for the avatar source and sends it', (
+    tester,
+  ) async {
+    final recorder = _EventRecorder();
+    Bloc.observer = recorder;
+    await tester.pumpWidget(
+      MaterialApp(
+        routes: {
+          '/': (_) => BlocProvider<FeedBloc>(
+            create: (_) => _FakeFeedBloc(),
+            child: const HomeScreen(),
+          ),
+          '/login': (_) => const Scaffold(body: Text('login')),
+        },
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.text('Perfil').last);
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Cambiar foto'));
+    await tester.pumpAndSettle();
+    expect(find.text('Elegir de la galería'), findsOneWidget);
+    expect(find.text('Tomar una foto'), findsOneWidget);
+
+    await tester.tap(find.text('Elegir de la galería'));
+    await tester.pumpAndSettle();
+
+    final event = recorder.events.whereType<AvatarChangeRequested>().single;
+    expect(event.source, PhotoSource.gallery);
+  });
+
+  testWidgets('ComposeScreen asks for the post photo source', (tester) async {
+    final recorder = _EventRecorder();
+    Bloc.observer = recorder;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider<ComposeBloc>(
+          create: (_) => _FakeComposeBloc(),
+          child: const ComposeScreen(),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Agregar foto'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tomar una foto'), findsOneWidget);
+
+    await tester.tap(find.text('Tomar una foto'));
+    await tester.pumpAndSettle();
+
+    final event = recorder.events.whereType<ComposePhotoRequested>().single;
+    expect(event.source, PhotoSource.camera);
+    expect(find.byType(Image), findsOneWidget);
+  });
+
+  testWidgets('FeedPage only offers delete on the user own posts', (
+    tester,
+  ) async {
+    Post? deleted;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FeedPage(
+            posts: [
+              _post('p1', authorId: 'u1'),
+              _post('p2', authorId: 'u2'),
+            ],
+            hasMore: false,
+            isLoading: false,
+            onLoadMore: () {},
+            onLike: (_) {},
+            currentProfileId: 'u1',
+            onDelete: (post) => deleted = post,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    expect(deleted?.id, 'p1');
+  });
+
+  testWidgets('FeedPage hides delete when no profile is signed in', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FeedPage(
+            posts: [_post('p1', authorId: 'u1')],
+            hasMore: false,
+            isLoading: false,
+            onLoadMore: () {},
+            onLike: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.delete_outline), findsNothing);
   });
 }
