@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:moviles_auth/components/avatar.dart';
@@ -98,11 +99,16 @@ class PostCard extends StatelessWidget {
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Image.network(
-                post.imageUrl!,
+              child: CachedNetworkImage(
+                imageUrl: post.imageUrl!,
+                cacheKey: post.imagePath,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Center(child: Icon(Icons.broken_image_outlined)),
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.broken_image_outlined),
+                ),
               ),
             ),
           ],

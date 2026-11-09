@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:moviles_auth/theme/app_theme.dart';
@@ -41,10 +42,11 @@ class Avatar extends StatelessWidget {
       ),
       child: photo == null
           ? _initial()
-          : Image.network(
-              photo,
+          : CachedNetworkImage(
+              imageUrl: photo,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _initial(),
+              placeholder: (context, url) => _initial(),
+              errorWidget: (context, url, error) => _initial(),
             ),
     );
   }

@@ -38,6 +38,7 @@ dependencies:
   supabase_flutter: ^2.18.0
   image_picker: ^1.2.4
   uuid: ^4.6.0
+  cached_network_image: ^4.0.3
 
 dev_dependencies:
   flutter_test:
