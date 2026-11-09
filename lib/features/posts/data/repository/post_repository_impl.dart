@@ -1,4 +1,5 @@
 import 'package:moviles_auth/features/avatar/data/source/device_photo_data_source.dart';
+import 'package:moviles_auth/features/avatar/domain/entities/photo_source.dart';
 import 'package:moviles_auth/features/avatar/domain/entities/picked_photo.dart';
 import 'package:moviles_auth/features/posts/data/source/supabase_post_data_source.dart';
 import 'package:moviles_auth/features/posts/data/source/supabase_post_image_data_source.dart';
@@ -37,8 +38,8 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<PickedPhoto?> pickImage() {
-    return _device.pick();
+  Future<PickedPhoto?> pickImage({PhotoSource source = PhotoSource.gallery}) {
+    return _device.pick(source: source);
   }
 
   @override

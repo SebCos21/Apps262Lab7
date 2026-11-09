@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:moviles_auth/components/error_message.dart';
+import 'package:moviles_auth/components/photo_source_sheet.dart';
 import 'package:moviles_auth/components/primary_button.dart';
 import 'package:moviles_auth/features/compose/ui/bloc/compose_bloc.dart';
 import 'package:moviles_auth/features/compose/ui/bloc/compose_event.dart';
@@ -34,12 +35,20 @@ class _ComposeScreenState extends State<ComposeScreen> {
     super.dispose();
   }
 
+  Future<void> _addPhoto() async {
+    final source = await showPhotoSourceSheet(
+      context,
+      title: 'Agregar foto al post',
+    );
+    if (source == null || !mounted) return;
+    context.read<ComposeBloc>().add(ComposePhotoRequested(source: source));
+  }
+
   Widget _photo(ComposeState state) {
     final photo = state.photo;
     if (photo == null) {
       return OutlinedButton.icon(
-        onPressed: () =>
-            context.read<ComposeBloc>().add(ComposePhotoRequested()),
+        onPressed: _addPhoto,
         icon: const Icon(Icons.add_photo_alternate_outlined),
         label: const Text('Agregar foto'),
       );

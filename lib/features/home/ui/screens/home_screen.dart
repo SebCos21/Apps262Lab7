@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:moviles_auth/components/photo_source_sheet.dart';
 import 'package:moviles_auth/features/home/ui/bloc/feed_bloc.dart';
 import 'package:moviles_auth/features/home/ui/bloc/feed_event.dart';
 import 'package:moviles_auth/features/home/ui/bloc/feed_state.dart';
@@ -35,6 +36,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _changeAvatar() async {
+    final source = await showPhotoSourceSheet(
+      context,
+      title: 'Cambiar foto de perfil',
+    );
+    if (source == null || !mounted) return;
+    context.read<FeedBloc>().add(AvatarChangeRequested(source: source));
+  }
+
   Widget _page(FeedState state) {
     final bloc = context.read<FeedBloc>();
     if (_index == 1) {
@@ -46,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
         profile: profile,
         posts: state.myPosts,
         isUploading: state.avatarStatus == AvatarStatus.uploading,
-        onChangePhoto: () => bloc.add(AvatarChangeRequested()),
+        onChangePhoto: _changeAvatar,
         onRemovePhoto: () => bloc.add(AvatarRemoveRequested()),
         onLike: (post) => bloc.add(FeedLikeToggled(post)),
         onSignOut: () => bloc.add(SignOutRequested()),
