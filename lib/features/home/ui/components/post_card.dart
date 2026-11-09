@@ -26,6 +26,27 @@ class PostCard extends StatelessWidget {
     return '${local.day}/${local.month} · ${local.hour}:$minutes';
   }
 
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar post'),
+        content: const Text('¿Quieres eliminar este post y su imagen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) onDelete?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,7 +92,7 @@ class PostCard extends StatelessWidget {
               ),
               if (canDelete && onDelete != null)
                 IconButton(
-                  onPressed: onDelete,
+                  onPressed: () => _confirmDelete(context),
                   icon: const Icon(Icons.delete_outline),
                   tooltip: 'Eliminar post',
                   visualDensity: VisualDensity.compact,

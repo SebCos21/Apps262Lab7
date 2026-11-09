@@ -357,7 +357,39 @@ void main() {
 
     expect(find.byIcon(Icons.delete_outline), findsOneWidget);
     await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('¿Quieres eliminar este post y su imagen?'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Eliminar'));
+    await tester.pumpAndSettle();
     expect(deleted?.id, 'p1');
+  });
+
+  testWidgets('FeedPage canceling delete keeps the post', (tester) async {
+    Post? deleted;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FeedPage(
+            posts: [_post('p1', authorId: 'u1')],
+            hasMore: false,
+            isLoading: false,
+            onLoadMore: () {},
+            onLike: (_) {},
+            currentProfileId: 'u1',
+            onDelete: (post) => deleted = post,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(deleted, isNull);
   });
 
   testWidgets('FeedPage hides delete when no profile is signed in', (
